@@ -1,0 +1,15 @@
+#!/bin/bash
+
+target=$1
+
+ignore_tmp=$2
+
+rsync -r "$target" --list-only | \
+	awk '
+		function basename(file) {
+   			sub(".*/", "", file)
+    		return file
+  		}
+
+		/^-/ {print "- " basename(substr($0, index($0, $5)))}' \
+	#>> $ignore_tmp

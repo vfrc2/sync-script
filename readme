@@ -1,0 +1,33 @@
+Sync script
+
+with 2 usb-hdd and 2-comp
+
+- Get target listing by network or from hdd
+- Skip files allready on target and files uploaded to any hdd
+
+Sequence: sync
+
+ - get target file list (lan or hdd)
+ - get pending file list (pending.lst)
+ - merge file lists > ignore.lst
+ - dry-run rsync > pending.lst.new
+ - check free space
+   - no free space return with error low space
+ - run rsync with ignore merget lists
+   - on error return
+ - move pending.lst.new pending.lst
+
+sequence: clear media | host
+ - get target file list (lan or hdd)
+ - convert file list > safedelete.lst
+ - rm all files from media or host dir wich contains in safedelete.lst
+
+
+ 
+  
+
+modules:
+ 
+ - lst > ignore file merger
+ - free space checker
+ 

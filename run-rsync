@@ -1,0 +1,46 @@
+#!/bin/bash
+
+hdd=hdd
+from=from/
+target=server.pyt.lan:share/videos/series/
+
+ignore=$hdd/ignore.lst
+
+ignore_base=$hdd/ignore_base.lst
+
+ignoretmp=".ignore.lst"
+
+#Get ignore list
+echo "; Ignore for '$target' at $(date)" > $ignoretmp
+rsync -r "$target" --list-only | \
+	awk '
+		function basename(file) {
+   			sub(".*/", "", file)
+    		return file
+  		}
+
+		/^-/ {print "- " basename(substr($0, index($0, $5)))}' \
+	>> $ignoretmp
+
+if [ $? -ne '0' ] 
+then
+	echo "Warning! No ignore file created $?"
+else
+	mv $ignoretmp $ignore
+fi
+
+param=""
+
+if [ -f "$ignore" ]
+then
+	param="$param --exclude-from \"$ignore\""
+fi
+
+if [ -f "$ignore_base" ]
+then
+	param="$param --exclude-from \"$ignore_base\""
+fi
+
+echo rsync -avr --info=progress2 "$from" "$hdd" $param
+
+
