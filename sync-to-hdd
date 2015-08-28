@@ -17,7 +17,7 @@ then
 	echo "origin: $from"
 	echo "target: $target"
 	echo 
-	echo "Usage $0 <path-to-hdd> [<more rsync flags>]"
+	echo "Usage $(basename $0) <path-to-hdd> [<more rsync flags>]"
 	exit 0
 fi
 
