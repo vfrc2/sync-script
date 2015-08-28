@@ -1,8 +1,25 @@
 #!/bin/bash
 
-#Script for copy files to externall hdd with 
-#respect of already copied file on target system
-#option F is on can spec .rsync-filter in from dir
+rsync_args2=$2
+
+#origin of files
+from="from/"
+
+#target of files
+target="server.pyt.lan:share/videos/series/"
+
+if [ "$1" == "-h" ]
+then
+	echo Script for copy files to externall hdd with 
+	echo respect of already copied file on target system
+	echo option F is on, you can spec .rsync-filter in from dir
+	echo
+	echo "origin: $from"
+	echo "target: $target"
+	echo 
+	echo "Usage $0 <path-to-hdd> [<more rsync flags>]"
+	exit 0
+fi
 
 rsync=$(which rsync)
 
@@ -17,15 +34,6 @@ then
 	echo "No such directory '$hdd'"
 	exit 1
 fi
-
-
-rsync_args2=$2
-
-#origin of files
-from="from/"
-
-#target of files
-target="server.pyt.lan:share/videos/series/"
 
 
 ignore=$hdd/ignore.lst
