@@ -14,7 +14,7 @@ rsync=$(which rsync)
 
 rsync_args="-avrh --progress -F --exclude '.rsync-filter' --exclude 'ignore.lst'"
 
-rsync_args2=$2
+rsync_args2=${@:2}
 
 cmd="$rsync $rsync_args $rsync_args2 \"$hdd\" \"$target\""
 

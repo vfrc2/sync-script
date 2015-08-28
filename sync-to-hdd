@@ -1,7 +1,5 @@
 #!/bin/bash
 
-rsync_args2=$2
-
 #origin of files
 from="from/"
 
@@ -35,11 +33,13 @@ then
 	exit 1
 fi
 
+rsync_args2=${@:2}
+
+echo "Args: $rsync_args2"
 
 ignore=$hdd/ignore.lst
 
 ignoretmp="/tmp/ignore.lst"
-
 
 #Get ignore list
 echo "; Ignore for '$target' at $(date)" > $ignoretmp
