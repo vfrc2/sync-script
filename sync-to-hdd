@@ -42,9 +42,9 @@ then
 	conf_loaded=true
 fi
 
-if [ -f "~/.sync-to-hdd.rc" ]
+if [ -f "$HOME/.sync-to-hdd.rc" ]
 then
-	source "~/.sync-to-hdd.rc"
+	source "$HOME/.sync-to-hdd.rc"
 	echo User conf loaded
 	conf_loaded=true
 fi
