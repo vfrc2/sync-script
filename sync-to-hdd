@@ -70,6 +70,12 @@ then
 	exit 1
 fi
 
+if [ ! -w "$hdd" ]
+then
+	echo "'$hdd' not writable"
+	exit 1
+fi
+
 ignore=$hdd/ignore.lst
 
 ignoretmp="/tmp/ignore.lst"
@@ -95,9 +101,9 @@ fi
 
 param=""
 
-if [ -f "$ignoretmp" ]
+if [ -f "$ignore" ]
 then
-	param="--exclude-from \"$ignoretmp\""
+	param="--exclude-from \"$ignore\""
 fi
 
 exclude="--exclude '.rsync-filter' --exclude 'ignore.lst'"
