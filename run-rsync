@@ -1,14 +1,37 @@
 #!/bin/bash
 
-hdd=hdd
-from=from/
-target=server.pyt.lan:share/videos/series/
+#Script for copy files to externall hdd with 
+#respect of already copied file on target system
+#option F is on can spec .rsync-filter in from dir
+
+rsync=$(which rsync)
+
+##default
+#rsync_args="-avr --progress"
+rsync_args="-avr --progress"
+
+hdd="${1%/}"
+
+if [ ! -d "$hdd" ]
+then
+	echo "No such directory '$hdd'"
+	exit 1
+fi
+
+
+rsync_args2=$2
+
+#origin of files
+from="from/"
+
+#target of files
+target="server.pyt.lan:share/videos/series/"
+
 
 ignore=$hdd/ignore.lst
 
-ignore_base=$hdd/ignore_base.lst
+ignoretmp="/tmp/ignore.lst"
 
-ignoretmp=".ignore.lst"
 
 #Get ignore list
 echo "; Ignore for '$target' at $(date)" > $ignoretmp
@@ -19,28 +42,30 @@ rsync -r "$target" --list-only | \
     		return file
   		}
 
-		/^-/ {print "- " basename(substr($0, index($0, $5)))}' \
+		/^-/ {print basename(substr($0, index($0, $5)))}' \
 	>> $ignoretmp
 
 if [ $? -ne '0' ] 
 then
 	echo "Warning! No ignore file created $?"
 else
-	mv $ignoretmp $ignore
+	mv "$ignoretmp" "$ignore"
 fi
+
+dirignore="-F --exclude '.rsync-filter'"
 
 param=""
 
 if [ -f "$ignore" ]
 then
-	param="$param --exclude-from \"$ignore\""
+	param="--exclude-from \"$ignore\""
 fi
 
-if [ -f "$ignore_base" ]
-then
-	param="$param --exclude-from \"$ignore_base\""
-fi
+cmd="\"$rsync\" $rsync_args $rsync_args2 $dirignore \"$from\" \"$hdd\" $param"
 
-echo rsync -avr --info=progress2 "$from" "$hdd" $param
+echo $cmd
+
+eval $cmd
+
 
 
