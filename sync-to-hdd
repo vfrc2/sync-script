@@ -90,14 +90,14 @@ if [ $? -ne '0' ]
 then
 	echo "Warning! No ignore file created $?"
 else
-	mv "$ignoretmp" "$ignore"
+	cp "$ignoretmp" "$ignore"
 fi
 
 param=""
 
 if [ -f "$ignore" ]
 then
-	param="--exclude-from \"$ignore\""
+	param="--exclude-from \"ignoretmp\""
 fi
 
 exclude="--exclude '.rsync-filter' --exclude 'ignore.lst'"
