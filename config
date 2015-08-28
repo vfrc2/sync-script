@@ -1,0 +1,13 @@
+# Config file for sync-to-hdd and sync-from-hdd
+
+#origin of files / target when copy from hdd
+from="from/"
+
+#target of files
+target="server.pyt.lan:share/videos/series/"
+
+#path to rsync command
+#rsync=$(which rsync)
+
+##default args to rsync
+#rsync_args="-avrh --progress -F"

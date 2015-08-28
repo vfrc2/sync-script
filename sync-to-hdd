@@ -1,29 +1,66 @@
 #!/bin/bash
 
-#origin of files
-from="from/"
 
-#target of files
-target="server.pyt.lan:share/videos/series/"
+#Cmd args
+rsync_args2=${@:2}
+
+userConf="config"
+
+if [ "${2:-n}" == "-c" ]
+then
+	userConf=$3
+	rsync_args2=${@:4}
+fi
+
+rsync=$(which rsync)
+
+rsync_args="-avr --progress -F"
+
+from="empty dir"
+
+target="empty dir"
+
 
 if [ "$1" == "-h" ]
 then
 	echo Script for copy files to externall hdd with 
 	echo respect of already copied file on target system
-	echo option F is on, you can spec .rsync-filter in from dir
+	echo use option -F, you can spec .rsync-filter in from dir
 	echo
-	echo "origin: $from"
-	echo "target: $target"
-	echo 
-	echo "Usage $(basename $0) <path-to-hdd> [<more rsync flags>]"
+	echo "Usage $(basename $0) <path-to-hdd> [-c <config>][<more rsync flags>]"
 	exit 0
 fi
 
-rsync=$(which rsync)
+#Check configs
 
-##default
-#rsync_args="-avr --progress"
-rsync_args="-avr --progress"
+conf_loaded=false
+
+if [ -f "/etc/sync-to-hdd.conf" ]
+then
+	source "/etc/sync-to-hdd.conf"
+	echo Global conf loaded
+	conf_loaded=true
+fi
+
+if [ -f "~/.sync-to-hdd.rc" ]
+then
+	source "~/.sync-to-hdd.rc"
+	echo User conf loaded
+	conf_loaded=true
+fi
+
+if [ -f "$userConf" ]
+then
+	source "$userConf"
+	echo "Immediate '$userConf' conf loadded"
+	conf_loaded=true
+fi
+
+if [ "$conf_loaded" == "false" ]
+then
+	echo "No config found!"
+	exit 1
+fi
 
 hdd="${1%/}"
 
@@ -32,10 +69,6 @@ then
 	echo "No such directory '$hdd'"
 	exit 1
 fi
-
-rsync_args2=${@:2}
-
-echo "Args: $rsync_args2"
 
 ignore=$hdd/ignore.lst
 
@@ -60,8 +93,6 @@ else
 	mv "$ignoretmp" "$ignore"
 fi
 
-dirignore="-F --exclude '.rsync-filter'"
-
 param=""
 
 if [ -f "$ignore" ]
@@ -69,7 +100,9 @@ then
 	param="--exclude-from \"$ignore\""
 fi
 
-cmd="\"$rsync\" $rsync_args $rsync_args2 $dirignore \"$from\" \"$hdd\" $param"
+exclude="--exclude '.rsync-filter' --exclude 'ignore.lst'"
+
+cmd="\"$rsync\" $rsync_args $exclude $rsync_args2 \"$from\" \"$hdd\" $param"
 
 echo $cmd
 

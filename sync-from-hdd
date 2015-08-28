@@ -1,6 +1,61 @@
 #!/bin/bash
 
-target="./target"
+from="no file"
+
+rsync=$(which rsync)
+
+rsync_args="-avrh --progress"
+
+rsync_args2=${@:2}
+
+userConf="config"
+
+if [ "${2:-n}" == "-c" ]
+then
+	userConf=$3
+	rsync_args2=${@:4}
+fi
+
+if [ "$1" == "-h" ]
+then
+	echo Script for copy files FROM externall hdd with 
+	echo respect of already copied file on target system
+	echo use option -F, you can spec .rsync-filter in from dir
+	echo
+	echo "Usage $(basename $0) <path-to-hdd> [-c <config>][<more rsync flags>]"
+	exit 0
+fi
+
+#Check configs
+
+conf_loaded=false
+
+if [ -f "/etc/sync-to-hdd.conf" ]
+then
+	source "/etc/sync-to-hdd.conf"
+	echo Global conf loaded
+	conf_loaded=true
+fi
+
+if [ -f "~/.sync-to-hdd.rc" ]
+then
+	source "~/.sync-to-hdd.rc"
+	echo User conf loaded
+	conf_loaded=true
+fi
+
+if [ -f "$userConf" ]
+then
+	source "$userConf"
+	echo "Immediate '$userConf' conf loadded"
+	conf_loaded=true
+fi
+
+if [ "$conf_loaded" == "false" ]
+then
+	echo "No config found!"
+	exit 1
+fi
 
 hdd="${1%/}"
 
@@ -10,13 +65,9 @@ then
 	exit 1
 fi
 
-rsync=$(which rsync)
+exclude="--exclude '.rsync-filter' --exclude 'ignore.lst'"
 
-rsync_args="-avrh --progress -F --exclude '.rsync-filter' --exclude 'ignore.lst'"
-
-rsync_args2=${@:2}
-
-cmd="$rsync $rsync_args $rsync_args2 \"$hdd\" \"$target\""
+cmd="$rsync $rsync_args $exclude $rsync_args2 \"$hdd\" \"$from\""
 
 echo $cmd
 
