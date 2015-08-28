@@ -95,7 +95,7 @@ fi
 
 param=""
 
-if [ -f "$ignore" ]
+if [ -f "$ignoretmp" ]
 then
 	param="--exclude-from \"$ignoretmp\""
 fi
