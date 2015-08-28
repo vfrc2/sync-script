@@ -97,7 +97,7 @@ param=""
 
 if [ -f "$ignore" ]
 then
-	param="--exclude-from \"ignoretmp\""
+	param="--exclude-from \"$ignoretmp\""
 fi
 
 exclude="--exclude '.rsync-filter' --exclude 'ignore.lst'"
